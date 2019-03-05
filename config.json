@@ -1,0 +1,8 @@
+[
+	{
+		"nth-weekday": 3,
+		"weekday": 5,
+		"reminder": 5,
+		"command": "echo hi"
+	}
+]
