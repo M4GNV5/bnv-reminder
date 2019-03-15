@@ -87,5 +87,9 @@ else if($action === "clear")
 	writeData([]);
 	echo("{\"status\":\"ok\"}");
 }
+else
+{
+	die("Invalid action");
+}
 
 ?>
