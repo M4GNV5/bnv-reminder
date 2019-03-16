@@ -1,0 +1,89 @@
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<link rel="stylesheet" href="bootstrap.css">
+	</head>
+	<body>
+		<center>
+			<div id="login" class="form-inline">
+				<input id="secret" type="password" class="form-control" />
+				<button onclick="loadParticipants()" class="btn btn-default">Login</button>
+			</div>
+			<div id="panel" style="display: none;">
+				<table class="table table-hover" style="max-width: 80%;">
+					<thead>
+						<tr>
+							<th>Name</th>
+							<th>Teilnahme</th>
+							<th>Zeitstempel</th>
+							<th>IP</th>
+						</tr>
+					</thead>
+					<tbody id="participants">
+
+					</tbody>
+				</table>
+				<button onclick="loadParticipants()" class="btn btn-primary">Reload Participants</button>
+				<button onclick="clearParticipants()" class="btn btn-danger">Clear Participants</button>
+			</div>
+		</center>
+
+		<script type="text/javascript">
+			var login = document.getElementById("login");
+			var panel = document.getElementById("panel");
+			var secret = document.getElementById("secret");
+			var participants = document.getElementById("participants");
+
+			if(localStorage.getItem("secret") !== null)
+				secret.value = localStorage.getItem("secret");
+		
+			function ajax(params, cb)
+			{
+				var request = new XMLHttpRequest();
+
+				request.open("POST", "api.php");
+				request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+				request.addEventListener('load', function(event) {
+					if (request.status == 200)
+						cb(request.responseText);
+					else
+						alert("Error: " + request.status + " " + request.statusText);
+				});
+				request.send(params);
+			}
+
+			function loadParticipants()
+			{
+				localStorage.setItem("secret", secret.value);
+				var params = "action=list&secret=" + secret.value;
+
+				ajax(params, function(data)
+				{
+					data = JSON.parse(data);
+					var src = "";
+					for(var token in data)
+					{
+						var entry = data[token];
+						src += "<tr>" +
+								"<td>" + entry.name + "</td>" +
+								"<td>" + entry.participation + "</td>" +
+								"<td>" + (new Date(entry.timestamp * 1000)).toLocaleString() + "</td>" +
+								"<td>" + entry.ip + "</td>" +
+							"</tr>";
+					}
+
+					participants.innerHTML = src;
+
+					login.style = "display: none;";
+					panel.style = "";
+				});
+			}
+
+			function clearParticipants()
+			{
+				ajax("action=clear&secret=" + secret.value, loadParticipants);
+			}
+
+		</script>
+	</body>
+</html>
