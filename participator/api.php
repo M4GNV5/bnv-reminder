@@ -4,7 +4,12 @@ $dataFile = "./data.json";
 $adminSecret = "some super secret secret here";
 
 
-
+function error($code, $msg)
+{
+	echo($msg);
+	http_response_code($code);
+	exit(1);
+}
 function readData()
 {
 	global $dataFile;
@@ -21,7 +26,7 @@ function writeData($data)
 
 
 if(!isset($_POST["action"]))
-	die("No action defined");
+	error(400, "No action defined");
 
 $action = $_POST["action"];
 
@@ -54,7 +59,10 @@ else if($action === "participate")
 	if(!isset($_POST["token"])
 		|| !isset($_POST["participation"])
 		|| !isset($_POST["name"]))
-		die("Missing parameters");
+		error(400, "Missing parameters");
+
+	if(!preg_match("/^\w+$/", $_POST["name"]))
+		error(400, "Invalid name");
 
 	$token = $_POST["token"];
 	$data = readData();
@@ -73,7 +81,7 @@ else if($action === "list")
 {
 	if(!isset($_POST["secret"])
 		|| $_POST["secret"] !== $adminSecret)
-		die("Missing or invalid secret");
+		error(401, "Missing or invalid secret");
 
 	$data = readData();
 	echo(json_encode($data));
@@ -82,14 +90,14 @@ else if($action === "clear")
 {
 	if(!isset($_POST["secret"])
 		|| $_POST["secret"] !== $adminSecret)
-		die("Missing or invalid secret");
+		error(401, "Missing or invalid secret");
 
 	writeData([]);
 	echo("{\"status\":\"ok\"}");
 }
 else
 {
-	die("Invalid action");
+	error(400, "Invalid action");
 }
 
 ?>

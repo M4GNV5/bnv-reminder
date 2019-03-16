@@ -68,8 +68,8 @@
 
 			function sendParticipation(participation)
 			{
-				if(!nameInput.value)
-					return alert("Kein Name angegeben!");
+				if(!/^\w+$/.test(nameInput.value))
+					return alert("Ungültiger Name!");
 
 				var token;
 				var newToken = Math.random().toString(36).substr(2);
