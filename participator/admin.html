@@ -81,6 +81,9 @@
 
 			function clearParticipants()
 			{
+				if(!confirm("Do you really want to clear all participants?"))
+					return;
+
 				ajax("action=clear&secret=" + secret.value, loadParticipants);
 			}
 
