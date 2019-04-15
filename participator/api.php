@@ -61,7 +61,7 @@ else if($action === "participate")
 		|| !isset($_POST["name"]))
 		error(400, "Missing parameters");
 
-	if(!preg_match("/^\w+$/", $_POST["name"]))
+	if(!preg_match("/^[a-zA-Z0-9öäüß -]+$/u", $_POST["name"]))
 		error(400, "Invalid name");
 
 	$token = $_POST["token"];

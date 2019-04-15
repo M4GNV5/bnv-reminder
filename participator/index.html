@@ -68,7 +68,7 @@
 
 			function sendParticipation(participation)
 			{
-				if(!/^\w+$/.test(nameInput.value))
+				if(!/^[a-zA-Z0-9öäüß -]+$/u.test(nameInput.value))
 					return alert("Ungültiger Name!");
 
 				var token;
