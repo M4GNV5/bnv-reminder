@@ -34,19 +34,31 @@ if($action === "status")
 {
 	$data = readData();
 
+	$participants = [];
 	$confirms = 0;
 	$rejects = 0;
 	foreach($data as $token => $entry)
 	{
+		if($entry["public"])
+		{
+			$participants[] = [
+				"name" => $entry["name"],
+				"participation" => $entry["participation"],
+			];
+		}
+
 		if($entry["participation"])
 			$confirms++;
 		else
 			$rejects++;
 	}
 
+	shuffle($participants);
+
 	$response = [
 		"confirms" => $confirms,
 		"rejects" => $rejects,
+		"participants" => $participants,
 	];
 
 	if(isset($_POST["token"]))
@@ -70,6 +82,7 @@ else if($action === "participate")
 	$data[$token] = [
 		"participation" => $_POST["participation"] === "true",
 		"name" => $_POST["name"],
+		"public" => $_POST["public"] === "true",
 		"timestamp" => $_SERVER["REQUEST_TIME"],
 		"ip" => $_SERVER["REMOTE_ADDR"],
 	];

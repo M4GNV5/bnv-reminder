@@ -5,9 +5,11 @@
 	</head>
 	<body>
 		<center>
-			<span id="content" class="form-inline">
+			<span class="form-inline">
 				<label for="name">Name</label>
 				<input id="name" type="text" placeholder="Name" class="form-control" style="margin: 5px;" /><br />
+				<label for="public">Meinen status veröffentlichen</label>
+				<input id="public" type="checkbox" class="form-control" style="margin: 5px;" /><br />
 				<button class="btn btn-success" onclick="sendParticipation(true)">Ich habe Zeit</button>
 				<button class="btn btn-danger" onclick="sendParticipation(false)">Ich habe keine Zeit</button>
 			</span>
@@ -17,14 +19,28 @@
 				Zusagen insgesamt: <span id="confirms"></span><br />
 				Absagen insgesamt: <span id="rejects"></span><br />
 			</div>
+			<br />
+			<h3>Öffentliche Zu-/Absagen</h3>
+			<table class="table table-hover" style="max-width: 80%;">
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>Teilnahme</th>
+					</tr>
+				</thead>
+				<tbody id="participants">
+
+				</tbody>
+			</table>
 		</center>
 
 		<script type="text/javascript">
-			var content = document.getElementById("content");
 			var confirms = document.getElementById("confirms");
 			var rejects = document.getElementById("rejects");
 			var ownStatus = document.getElementById("ownStatus");
+			var participants = document.getElementById("participants");
 			var nameInput = document.getElementById("name");
+			var publicInput = document.getElementById("public");
 
 			refreshStatus();
 
@@ -61,8 +77,20 @@
 						ownStatus.innerHTML = data.user.participation
 							? "Sie nehmen teil"
 							: "Sie nehmen nicht teil";
+						public.checked = data.user.public;
 					}
 
+					var src = "";
+					for(var i = 0; i < data.participants.length; i++)
+					{
+						var entry = data.participants[i];
+						src += "<tr>" +
+								"<td>" + entry.name + "</td>" +
+								"<td>" + (entry.participation ? "Ja" : "Nein") + "</td>" +
+							"</tr>";
+					}
+
+					participants.innerHTML = src;
 				});
 			}
 
@@ -87,6 +115,7 @@
 				var params = "action=participate"
 					+ "&token=" + token
 					+ "&participation=" + participation
+					+ "&public=" + publicInput.checked
 					+ "&name=" + encodeURIComponent(nameInput.value);
 
 				ajax(params, function(text)
